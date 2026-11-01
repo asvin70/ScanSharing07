@@ -1,0 +1,301 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Event Gallery - SnapGather</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f3ff;
+    padding: 25px;
+    color: #29243d;
+    margin: 0;
+}
+.nav {
+    margin-bottom: 25px;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: white;
+    color: #7048d8;
+    border: 1px solid #e7defa;
+    border-radius: 12px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 5px 18px rgba(80, 50, 140, 0.08);
+    transition: all 0.25s ease;
+}
+
+.back-btn:hover {
+    background: #7048d8;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(112, 72, 216, 0.25);
+}
+
+.back-icon {
+    font-size: 20px;
+    line-height: 1;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+}
+
+.header {
+    background: linear-gradient(135deg, #7048d8, #a16be9);
+    color: white;
+    padding: 30px;
+    border-radius: 18px;
+    margin-bottom: 25px;
+}
+
+.header h1 {
+    margin-top: 0;
+    font-size: 30px;
+}
+
+.header p {
+    line-height: 1.6;
+}
+
+.nav {
+    margin-bottom: 20px;
+}
+
+.nav a {
+    color: #7048d8;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+
+button, .action-link {
+    background: #7048d8;
+    color: white;
+    border: 0;
+    padding: 12px 18px;
+    border-radius: 9px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 18px;
+    margin-top: 20px;
+}
+
+.photo {
+    background: white;
+    padding: 10px;
+    border-radius: 14px;
+    box-shadow: 0 5px 20px #49308012;
+    overflow: hidden;
+}
+
+.photo img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 9px;
+    display: block;
+}
+
+.photo a {
+    display: block;
+    margin-top: 12px;
+    text-align: center;
+    color: #7048d8;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 8px;
+}
+
+.empty {
+    background: white;
+    padding: 35px;
+    text-align: center;
+    border-radius: 14px;
+    color: #827b91;
+}
+
+@media(max-width: 500px) {
+    body {
+        padding: 15px;
+    }
+
+    .header {
+        padding: 22px;
+    }
+
+    .header h1 {
+        font-size: 24px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="nav">
+    <a href="dashboard.html" class="back-btn">
+        <span class="back-icon">←</span>
+        <span>Back to Dashboard</span>
+    </a>
+</div>
+
+    <div class="header">
+        <h1 id="title">Event Gallery</h1>
+        <p id="details">Loading event details...</p>
+    </div>
+
+    <div class="actions">
+        <a id="uploadLink" class="action-link" href="#">
+            + Upload More Photos
+        </a>
+    </div>
+
+    <h2>Event Photos 📸</h2>
+
+    <div class="grid" id="gallery">
+        <div class="empty">Loading photos...</div>
+    </div>
+
+</div>
+
+<script>
+
+const user = JSON.parse(
+    localStorage.getItem("snapGatherCurrentUser") || "null"
+);
+
+if (!user) {
+    location.href = "index.php";
+}
+
+const id = new URLSearchParams(location.search).get("id");
+
+const events = JSON.parse(
+    localStorage.getItem("snapGatherEvents") || "[]"
+);
+
+const event = events.find(
+    e => e.id === id && e.owner === user.email
+);
+
+const title = document.getElementById("title");
+const details = document.getElementById("details");
+const gallery = document.getElementById("gallery");
+const uploadLink = document.getElementById("uploadLink");
+
+if (!event) {
+
+    title.textContent = "Event Not Found";
+    details.textContent = "This event does not exist or you do not have permission to view it.";
+
+    gallery.innerHTML =
+        '<div class="empty">Please check your event QR code or return to the dashboard.</div>';
+
+} else {
+
+    title.textContent = event.name || "Event Gallery";
+
+    details.textContent =
+        (event.date || "") + " | " + (event.location || "");
+
+    uploadLink.href =
+        "upload.html?id=" + encodeURIComponent(event.id);
+
+    // Load saved photos
+    const photosByEvent = JSON.parse(
+        localStorage.getItem("snapGatherPhotos") || "{}"
+    );
+
+    const photos = photosByEvent[id] || [];
+
+    gallery.innerHTML = "";
+
+    if (!photos.length) {
+
+        gallery.innerHTML =
+            '<div class="empty">No photos uploaded yet. Upload your first photo!</div>';
+
+    } else {
+
+        photos.forEach((photo, index) => {
+
+            // Your upload page stores each photo as a data URL string.
+            // This also supports older object-based photo entries.
+
+            const imageData =
+                typeof photo === "string"
+                    ? photo
+                    : photo.data || photo.url || photo.image || "";
+
+            const imageName =
+                typeof photo === "object" && photo.name
+                    ? photo.name
+                    : "SnapGather-Photo-" + (index + 1) + ".jpg";
+
+            if (!imageData) {
+                console.warn("Photo data missing at position:", index);
+                return;
+            }
+
+            const card = document.createElement("div");
+            card.className = "photo";
+
+            const img = document.createElement("img");
+            img.src = imageData;
+            img.alt = imageName;
+            img.loading = "lazy";
+
+            const download = document.createElement("a");
+            download.href = imageData;
+            download.download = imageName;
+            download.textContent = "⬇ Download Photo";
+
+            card.appendChild(img);
+            card.appendChild(download);
+
+            gallery.appendChild(card);
+
+        });
+
+        if (!gallery.children.length) {
+            gallery.innerHTML =
+                '<div class="empty">Photo data is missing. Please upload your photos again.</div>';
+        }
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>

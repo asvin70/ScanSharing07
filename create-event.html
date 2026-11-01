@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Event | ScanSharing</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+ font-family:Inter,Arial,sans-serif;
+ background:#f5f3ff;color:#211b36;
+ min-height:100vh;
+}
+button,input,select,textarea{font:inherit}
+.topbar{
+ height:76px;background:white;display:flex;align-items:center;
+ justify-content:space-between;padding:0 6%;
+ border-bottom:1px solid #eee9ff;
+}
+.logo{font-size:25px;font-weight:800;color:#6d45dc}
+.logo span{color:#f18baf}
+.top-actions{display:flex;gap:12px;align-items:center}
+.nav-btn{
+ text-decoration:none;padding:11px 17px;border-radius:12px;
+ color:#55447d;background:#f3efff;font-weight:700;font-size:14px
+}
+.container{max-width:1120px;margin:38px auto;padding:0 22px}
+.intro{margin-bottom:28px}
+.eyebrow{
+ color:#8059df;font-size:12px;font-weight:800;
+ letter-spacing:2px;text-transform:uppercase;margin-bottom:10px
+}
+.intro h1{font-size:36px;margin-bottom:9px;letter-spacing:-1px}
+.intro p{color:#77718a;line-height:1.6}
+.layout{
+ display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,.8fr);
+ gap:24px;align-items:start
+}
+.card{
+ background:white;border:1px solid #ebe6f8;
+ border-radius:22px;padding:28px;
+ box-shadow:0 12px 35px rgba(72,48,130,.06)
+}
+.card-heading{display:flex;gap:13px;align-items:center;margin-bottom:25px}
+.heading-icon{
+ width:45px;height:45px;border-radius:14px;
+ background:#f0eaff;display:grid;place-items:center;font-size:22px
+}
+.card-heading h2{font-size:19px;margin-bottom:4px}
+.card-heading p{font-size:13px;color:#89839b}
+.field{margin-bottom:19px}
+.field label{display:block;font-size:13px;font-weight:700;margin-bottom:9px}
+.field input,.field select,.field textarea{
+ width:100%;border:1px solid #e5e0ef;border-radius:12px;
+ padding:14px 15px;background:#fff;color:#302747;outline:none;
+ transition:.2s
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+ border-color:#9068ed;box-shadow:0 0 0 3px #eee7ff
+}
+.field textarea{resize:vertical;min-height:105px}
+.field input::placeholder,.field textarea::placeholder{color:#aaa4b7}
+.two-cols{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.event-types{
+ display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
+ margin-bottom:22px
+}
+.type-option{position:relative}
+.type-option input{position:absolute;opacity:0}
+.type-option label{
+ display:flex;flex-direction:column;align-items:center;gap:9px;
+ border:1px solid #e8e2f4;border-radius:15px;padding:16px 8px;
+ cursor:pointer;transition:.2s;color:#625a74;font-size:13px;font-weight:700
+}
+.type-option label span{font-size:25px}
+.type-option input:checked+label{
+ border:2px solid #8058e4;background:#f5f0ff;color:#7047d2
+}
+.submit-btn{
+ width:100%;border:0;border-radius:13px;padding:16px;
+ background:linear-gradient(100deg,#7046dc,#a16be9);
+ color:white;font-size:15px;font-weight:800;cursor:pointer;
+ box-shadow:0 9px 20px #8058e43b;transition:.2s
+}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 12px 25px #8058e455}
+.side-card{
+ background:linear-gradient(145deg,#7048d8,#9a6ce8);
+ color:white;border-radius:22px;padding:25px;
+ margin-bottom:20px;overflow:hidden;position:relative
+}
+.side-card h3{font-size:20px;margin:13px 0 9px}
+.side-card p{font-size:13px;line-height:1.7;color:#eee5ff}
+.side-emoji{font-size:35px}
+.steps{background:white;border:1px solid #ebe6f8;border-radius:22px;padding:24px}
+.steps h3{font-size:17px;margin-bottom:20px}
+.step{display:flex;gap:13px;margin-bottom:19px}
+.step:last-child{margin-bottom:0}
+.step-number{
+ flex-shrink:0;width:30px;height:30px;border-radius:50%;
+ background:#f0eaff;color:#744bd5;display:grid;place-items:center;
+ font-size:13px;font-weight:800
+}
+.step strong{font-size:13px;display:block;margin:2px 0 5px}
+.step p{font-size:12px;color:#89839b;line-height:1.5}
+.result{
+ display:none;margin-top:22px;background:#f5f0ff;
+ border:1px solid #e2d7ff;border-radius:18px;padding:22px;text-align:center
+}
+.result h3{color:#6541c6;margin-bottom:7px}
+.result p{font-size:13px;color:#756b8c;line-height:1.5}
+#qrcode{
+ display:flex;justify-content:center;margin:18px auto;
+ background:white;padding:12px;border-radius:12px;width:max-content
+}
+.result-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.result-actions a,.result-actions button{
+ text-decoration:none;border:0;border-radius:11px;padding:12px 15px;
+ background:#754cda;color:white;font-weight:700;font-size:13px;cursor:pointer
+}
+.result-actions .secondary{background:white;color:#6747b8;border:1px solid #ded3fa}
+.note{font-size:12px;color:#8b849d;margin-top:14px;line-height:1.5}
+@media(max-width:800px){
+ .layout{grid-template-columns:1fr}
+ .intro h1{font-size:29px}
+}
+@media(max-width:480px){
+ .topbar{padding:0 16px;height:66px}
+ .container{margin:25px auto;padding:0 14px}
+ .card{padding:19px}
+ .two-cols{grid-template-columns:1fr;gap:0}
+ .event-types{gap:7px}
+ .type-option label{padding:13px 4px;font-size:11px}
+ .nav-btn{padding:10px;font-size:12px}
+}
+</style>
+</head>
+
+<body>
+<header class="topbar">
+ <div class="logo">Snap<span>Sharing.</span></div>
+ <div class="top-actions">
+  <a class="nav-btn" href="dashboard.html">← Dashboard</a>
+ </div>
+</header>
+
+<main class="container">
+ <section class="intro">
+  <div class="eyebrow">Your memories start here</div>
+  <h1>Create a New Event ✨</h1>
+  <p>Set up your event, collect beautiful memories, and share them with guests using one QR code.</p>
+ </section>
+
+ <div class="layout">
+  <section class="card">
+   <div class="card-heading">
+    <div class="heading-icon">🎉</div>
+    <div>
+     <h2>Event Information</h2>
+     <p>Fill in the details about your event.</p>
+    </div>
+   </div>
+
+   <form id="eventForm">
+    <div class="field">
+     <label>Choose Event Type</label>
+     <div class="event-types">
+      <div class="type-option">
+       <input type="radio" name="type" id="wedding" value="Wedding" checked>
+       <label for="wedding"><span>💍</span>Wedding</label>
+      </div>
+      <div class="type-option">
+       <input type="radio" name="type" id="birthday" value="Birthday">
+       <label for="birthday"><span>🎂</span>Birthday</label>
+      </div>
+      <div class="type-option">
+       <input type="radio" name="type" id="other" value="Other">
+       <label for="other"><span>🎊</span>Other</label>
+      </div>
+     </div>
+    </div>
+
+    <div class="field">
+     <label for="customer">Customer Name *</label>
+     <input id="customer" type="text" placeholder="e.g. Rahul & Riya " required>
+    </div>
+
+    <div class="field">
+     <label for="eventName">Event Name *</label>
+     <input id="eventName" type="text" placeholder="e.g. wedding & Birthday " required>
+    </div>
+
+    <div class="two-cols">
+     <div class="field">
+      <label for="eventDate">Event Date *</label>
+      <input id="eventDate" type="date" required>
+     </div>
+     <div class="field">
+      <label for="location">Event Location *</label>
+      <input id="location" type="text" placeholder="City or venue" required>
+     </div>
+    </div>
+    <div class="field">
+     <label for="description">Event Description</label>
+     <textarea id="description" placeholder="Add a short description about the event"></textarea>
+    </div>
+    
+
+    <button class="submit-btn" type="submit">✨ Create Event & Generate QR Code</button>
+   </form>
+
+   <div class="result" id="result">
+    <h3>🎉 Your Event Is Created!</h3>
+    <p>Your unique event QR code is ready.</p>
+    <div id="qrcode"></div>
+    <div class="result-actions">
+     <a id="galleryLink" href="#">Open Gallery</a>
+     <a id="uploadLink" class="secondary" href="#">Upload Photos</a>
+     <button class="secondary" type="button" onclick="downloadQR()">Download QR</button>
+    </div>
+    <p class="note">Save this QR code to share your event gallery. Your current project stores event data in this browser only.</p>
+   </div>
+  </section>
+
+  <aside>
+   <div class="side-card">
+    <div class="side-emoji">📸</div>
+    <h3>Every moment deserves to be remembered.</h3>
+    <p>Create an event gallery and bring everyone's photos together in one place with SnapGather.</p>
+   </div>
+
+   <div class="steps">
+    <h3>How it works</h3>
+    <div class="step">
+     <div class="step-number">1</div>
+     <div><strong>Create your event</strong><p>Add your event name, date and location.</p></div>
+    </div>
+    <div class="step">
+     <div class="step-number">2</div>
+     <div><strong>Upload your photos</strong><p>Add your event pictures to the gallery.</p></div>
+    </div>
+    <div class="step">
+     <div class="step-number">3</div>
+     <div><strong>Share your QR code</strong><p>Let guests access your event gallery.</p></div>
+    </div>
+   </div>
+  </aside>
+ </div>
+</main>
+
+<script>
+const currentUser = JSON.parse(localStorage.getItem("snapGatherCurrentUser") || "null");
+
+if (!currentUser) {
+ window.location.href = "index.php";
+}
+
+const form = document.getElementById("eventForm");
+let createdEvent = null;
+
+form.addEventListener("submit", function(e) {
+ e.preventDefault();
+
+ const customer = document.getElementById("customer").value.trim();
+ const name = document.getElementById("eventName").value.trim();
+ const date = document.getElementById("eventDate").value;
+ const location = document.getElementById("location").value.trim();
+ const description = document.getElementById("description").value.trim();
+ const type = document.querySelector('input[name="type"]:checked').value;
+
+ if (!customer || !name || !date || !location) {
+  alert("Please fill in all required fields.");
+  return;
+ }
+
+ const events = JSON.parse(localStorage.getItem("snapGatherEvents") || "[]");
+
+ createdEvent = {
+  id: "event-" + Date.now(),
+  owner: currentUser.email,
+  customer: customer,
+  name: name,
+  type: type,
+  date: date,
+  location: location,
+  description: description
+ };
+
+ events.push(createdEvent);
+
+ try {
+  localStorage.setItem("snapGatherEvents", JSON.stringify(events));
+ } catch (error) {
+  alert("Could not save the event. Your browser storage may be full.");
+  return;
+ }
+
+ const galleryURL = new URL("gallery.html", window.location.href);
+ galleryURL.searchParams.set("id", createdEvent.id);
+
+ document.getElementById("qrcode").innerHTML = "";
+
+ new QRCode(document.getElementById("qrcode"), {
+  text: galleryURL.href,
+  width: 190,
+  height: 190,
+  colorDark: "#211b36",
+  colorLight: "#ffffff",
+  correctLevel: QRCode.CorrectLevel.H
+ });
+
+ document.getElementById("galleryLink").href = galleryURL.href;
+
+ const uploadURL = new URL("upload.html", window.location.href);
+ uploadURL.searchParams.set("id", createdEvent.id);
+ document.getElementById("uploadLink").href = uploadURL.href;
+
+ document.getElementById("result").style.display = "block";
+ document.getElementById("result").scrollIntoView({
+  behavior: "smooth",
+  block: "center"
+ });
+
+ document.querySelector(".submit-btn").textContent = "✓ Event Created Successfully";
+});
+
+function downloadQR() {
+ const qr = document.querySelector("#qrcode img");
+ const canvas = document.querySelector("#qrcode canvas");
+
+ if (qr) {
+  const link = document.createElement("a");
+  link.href = qr.src;
+  link.download = "SnapGather-Event-QR.png";
+  link.click();
+ } else if (canvas) {
+  const link = document.createElement("a");
+  link.href = canvas.toDataURL("image/png");
+  link.download = "SnapGather-Event-QR.png";
+  link.click();
+ } else {
+  alert("Please create an event first.");
+ }
+}
+</script>
+</body>
+</html>

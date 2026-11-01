@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scan QR Code | ScanSharing</title>
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f5f3ff;color:#241d36;min-height:100vh}
+.navbar{height:72px;background:white;border-bottom:1px solid #eee8f7;display:flex;align-items:center;justify-content:space-between;padding:0 6%}
+.logo{font-size:25px;font-weight:800;color:#7048d8}
+.logo span{color:#ef8bb0}
+.navbar a{background:#f1ecff;color:#7048d8;padding:11px 16px;border-radius:10px;text-decoration:none;font-size:13px;font-weight:700}
+.container{max-width:1050px;margin:38px auto;padding:0 20px}
+.heading{text-align:center;margin-bottom:28px}
+.heading small{color:#8059df;font-weight:800;letter-spacing:2px}
+.heading h1{font-size:34px;margin:12px 0}
+.heading p{color:#817a91;line-height:1.6}
+.layout{display:grid;grid-template-columns:1.4fr .8fr;gap:22px;align-items:start}
+.card{background:white;border:1px solid #ebe6f8;border-radius:22px;padding:25px;box-shadow:0 12px 35px #4930800c}
+.card h2{font-size:19px;margin-bottom:8px}
+.sub{font-size:13px;color:#89839b;line-height:1.5}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0}
+.tab{border:1px solid #e7e0f3;background:#faf9fd;color:#655b79;border-radius:12px;padding:14px 8px;font-weight:700;cursor:pointer}
+.tab.active{background:#f0eaff;border:1px solid #9876e9;color:#7048d8}
+.camera-panel,.upload-panel{display:none}
+.camera-panel.active,.upload-panel.active{display:block}
+.scan-area{background:#18142a;border-radius:18px;padding:18px;overflow:hidden}
+#reader{width:100%;min-height:280px;border:0!important;border-radius:12px;overflow:hidden}
+#reader video{border-radius:12px;object-fit:cover}
+#reader img{max-width:100%}
+#reader__scan_region{background:transparent!important}
+#reader__dashboard{padding:10px!important;color:white!important}
+#reader__dashboard button{padding:10px;border:0;border-radius:8px;background:#8a65e8;color:white;font-weight:700;cursor:pointer}
+#reader__status_span{color:white!important}
+.camera-caption{text-align:center;color:#eee7ff;font-size:13px;margin-top:12px;line-height:1.5}
+.controls{display:flex;gap:10px;margin-top:17px}
+.btn{flex:1;padding:14px;border:0;border-radius:11px;background:#754cda;color:white;font-weight:700;cursor:pointer}
+.btn.secondary{background:#f0eaff;color:#7048d8}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.upload-drop{border:2px dashed #c9b8ef;border-radius:17px;padding:35px 15px;text-align:center;background:#faf8ff;cursor:pointer}
+.upload-drop:hover{background:#f2edff;border-color:#8058e4}
+.upload-icon{font-size:42px;margin-bottom:12px}
+.upload-drop h3{font-size:17px;margin-bottom:8px}
+.upload-drop p{font-size:12px;color:#89839b;line-height:1.6}
+.upload-drop .browse{display:inline-block;background:#754cda;color:white;padding:12px 20px;border-radius:10px;margin-top:15px;font-size:13px;font-weight:700}
+#qrPreview{display:none;max-width:100%;max-height:260px;object-fit:contain;margin:18px auto;border-radius:12px}
+.upload-status{text-align:center;font-size:13px;color:#756b8c;margin-top:14px;line-height:1.6}
+.result{display:none;margin-top:20px;border-radius:16px;padding:20px;background:#effaf3;border:1px solid #ccebd7}
+.result h3{color:#16834b;margin-bottom:8px}
+.result p{font-size:13px;color:#547360;line-height:1.6}
+.result a{display:block;text-decoration:none;text-align:center;background:#198754;color:white;padding:13px;border-radius:10px;margin-top:15px;font-weight:700;font-size:14px}
+.message{margin-top:15px;padding:13px;border-radius:11px;font-size:13px;line-height:1.6;display:none}
+.message.error{display:block;background:#fff0f0;color:#bd3545}
+.message.info{display:block;background:#f1edff;color:#6847b5}
+.side-banner{background:linear-gradient(145deg,#7048d8,#9a6ce8);color:white;border-radius:22px;padding:24px;margin-bottom:20px}
+.side-banner .emoji{font-size:35px}
+.side-banner h3{font-size:20px;margin:13px 0 9px}
+.side-banner p{font-size:13px;color:#eee5ff;line-height:1.7}
+.instructions{background:white;border:1px solid #ebe6f8;border-radius:22px;padding:23px}
+.instructions h3{margin-bottom:18px}
+.step{display:flex;gap:12px;margin-bottom:17px}
+.number{width:30px;height:30px;flex-shrink:0;border-radius:50%;background:#f0eaff;color:#7048d8;display:grid;place-items:center;font-weight:800;font-size:13px}
+.step strong{font-size:13px;display:block;margin:3px 0 5px}
+.step p{font-size:12px;color:#89839b;line-height:1.5}
+.manual{margin-top:18px}
+.manual label{font-size:13px;font-weight:700;display:block;margin-bottom:9px}
+.manual input{width:100%;padding:13px;border:1px solid #e5e0ef;border-radius:10px;outline:none}
+.manual button{width:100%;padding:12px;margin-top:10px;border:0;border-radius:10px;background:#f0eaff;color:#7048d8;font-weight:700;cursor:pointer}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.heading h1{font-size:28px}}
+@media(max-width:450px){.navbar{padding:0 15px}.container{padding:0 13px;margin:25px auto}.card{padding:17px}.controls{flex-direction:column}}
+</style>
+</head>
+
+<body>
+<header class="navbar">
+ <div class="logo">Scan<span>Sharing.</span></div>
+ <a href="dashboard.html">← Dashboard</a>
+</header>
+
+<main class="container">
+ <section class="heading">
+  <small>DISCOVER YOUR MEMORIES</small>
+  <h1>Scan Your Event QR Code 📷</h1>
+  <p>Scan with your camera or upload a QR code image to open your event gallery.</p>
+ </section>
+
+ <div class="layout">
+  <section class="card">
+   <h2>QR Code Scanner</h2>
+   <p class="sub">Choose how you want to scan your event QR code.</p>
+
+   <div class="tabs">
+    <button class="tab active" id="cameraTab" type="button">📷 Start Camera</button>
+    <button class="tab" id="uploadTab" type="button">🖼️ Upload QR Image</button>
+   </div>
+
+   <div class="camera-panel active" id="cameraPanel">
+    <div class="scan-area">
+     <div id="reader"></div>
+     <p class="camera-caption">Point your camera at the QR code. Keep the code inside the camera view.</p>
+    </div>
+    <div class="controls">
+     <button class="btn" id="startBtn" type="button">Start Camera</button>
+     <button class="btn secondary" id="stopBtn" type="button" disabled>Stop Camera</button>
+    </div>
+   </div>
+
+   <div class="upload-panel" id="uploadPanel">
+    <div class="upload-drop" id="uploadDrop">
+     <div class="upload-icon">📤</div>
+     <h3>Upload Your QR Code Image</h3>
+     <p>Select a clear photo or screenshot containing your SnapGather QR code.</p>
+     <span class="browse">Choose QR Image</span>
+     <input type="file" id="qrFile" accept="image/*" hidden>
+    </div>
+    <img id="qrPreview" alt="Selected QR code image">
+    <p class="upload-status" id="uploadStatus">Your selected QR image will be scanned here.</p>
+    <button class="btn" id="scanImageBtn" type="button" disabled>Scan Uploaded QR Image</button>
+   </div>
+
+   <div id="message" class="message"></div>
+
+   <div class="result" id="result">
+    <h3>✓ QR Code Successfully Scanned!</h3>
+    <p id="resultText">Your event gallery is ready.</p>
+    <a id="openGallery" href="#">Open Event Gallery →</a>
+   </div>
+
+   <div class="manual">
+    <label for="eventId">Or enter your Event ID manually</label>
+    <input id="eventId" type="text" placeholder="Example: event-123456789">
+    <button id="manualBtn" type="button">Find My Event</button>
+   </div>
+  </section>
+
+  <aside>
+   <div class="side-banner">
+    <div class="emoji">✨</div>
+    <h3>Your memories are just one scan away.</h3>
+    <p>Scan the event QR code to access the corresponding SnapGather gallery.</p>
+   </div>
+
+   <div class="instructions">
+    <h3>How to scan</h3>
+    <div class="step">
+     <div class="number">1</div>
+     <div><strong>Choose a method</strong><p>Start your camera or select a QR image.</p></div>
+    </div>
+    <div class="step">
+     <div class="number">2</div>
+     <div><strong>Scan the QR code</strong><p>Keep the QR code clear and fully visible.</p></div>
+    </div>
+    <div class="step">
+     <div class="number">3</div>
+     <div><strong>Open your gallery</strong><p>After successful validation, open your event gallery.</p></div>
+    </div>
+   </div>
+  </aside>
+ </div>
+</main>
+
+<!-- Separate hidden reader for uploaded image scanning -->
+<div id="fileReader" style="position:absolute;left:-10000px;top:0;width:320px;height:320px;overflow:hidden"></div>
+
+<script>
+const user = JSON.parse(localStorage.getItem("snapGatherCurrentUser") || "null");
+
+if (!user) {
+ window.location.href = "index.php";
+}
+
+const cameraPanel = document.getElementById("cameraPanel");
+const uploadPanel = document.getElementById("uploadPanel");
+const cameraTab = document.getElementById("cameraTab");
+const uploadTab = document.getElementById("uploadTab");
+const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
+const qrFile = document.getElementById("qrFile");
+const qrPreview = document.getElementById("qrPreview");
+const scanImageBtn = document.getElementById("scanImageBtn");
+const uploadStatus = document.getElementById("uploadStatus");
+const message = document.getElementById("message");
+const result = document.getElementById("result");
+
+let cameraScanner = null;
+let fileScanner = null;
+let cameraRunning = false;
+let selectedQRFile = null;
+
+const scannerConfig = {
+ fps: 10,
+ qrbox: {width: 240, height: 240},
+ aspectRatio: 1,
+ formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE]
+};
+
+function showMessage(text, type) {
+ message.textContent = text;
+ message.className = "message " + type;
+}
+
+function clearMessage() {
+ message.textContent = "";
+ message.className = "message";
+}
+
+async function stopCamera() {
+ if (cameraRunning && cameraScanner) {
+  try {
+   await cameraScanner.stop();
+  } catch (error) {
+   console.log("Camera stop:", error);
+  }
+  cameraRunning = false;
+  try { cameraScanner.clear(); } catch(error) {}
+ }
+ startBtn.disabled = false;
+ stopBtn.disabled = true;
+}
+
+function showMode(mode) {
+ clearMessage();
+ result.style.display = "none";
+
+ if (mode === "camera") {
+  uploadPanel.classList.remove("active");
+  cameraPanel.classList.add("active");
+  cameraTab.classList.add("active");
+  uploadTab.classList.remove("active");
+ } else {
+  cameraPanel.classList.remove("active");
+  uploadPanel.classList.add("active");
+  cameraTab.classList.remove("active");
+  uploadTab.classList.add("active");
+ }
+}
+
+cameraTab.addEventListener("click", async () => {
+ await stopCamera();
+ showMode("camera");
+});
+
+uploadTab.addEventListener("click", async () => {
+ await stopCamera();
+ showMode("upload");
+});
+
+async function startCamera() {
+ clearMessage();
+ result.style.display = "none";
+
+ if (!window.isSecureContext) {
+  showMessage("Camera access requires HTTPS or localhost. Open your project using http://localhost/SnapGather/scan.html.", "error");
+  return;
+ }
+
+ try {
+  if (!cameraScanner) {
+   cameraScanner = new Html5Qrcode("reader", scannerConfig);
+  }
+
+  startBtn.disabled = true;
+
+  await cameraScanner.start(
+   {facingMode:"environment"},
+   scannerConfig,
+   (decodedText) => {
+    handleDecodedQR(decodedText);
+   },
+   () => {}
+  );
+
+  cameraRunning = true;
+  stopBtn.disabled = false;
+  showMessage("Camera is running. Point it at a QR code.", "info");
+
+ } catch(error) {
+  startBtn.disabled = false;
+  stopBtn.disabled = true;
+  showMessage("Camera could not start. Please allow camera permission and close other apps using your camera. Details: " + error, "error");
+ }
+}
+
+startBtn.addEventListener("click", startCamera);
+stopBtn.addEventListener("click", stopCamera);
+
+document.getElementById("uploadDrop").addEventListener("click", () => {
+ qrFile.click();
+});
+
+qrFile.addEventListener("change", () => {
+ const file = qrFile.files[0];
+ if (!file) return;
+
+ selectedQRFile = file;
+ qrPreview.src = URL.createObjectURL(file);
+ qrPreview.style.display = "block";
+ uploadStatus.textContent = "Image selected: " + file.name;
+ scanImageBtn.disabled = false;
+ result.style.display = "none";
+ clearMessage();
+});
+
+scanImageBtn.addEventListener("click", async () => {
+ if (!selectedQRFile) return;
+
+ await stopCamera();
+ clearMessage();
+ result.style.display = "none";
+
+ scanImageBtn.disabled = true;
+ uploadStatus.textContent = "Reading your QR code image. Please wait...";
+
+ try {
+  if (!fileScanner) {
+   fileScanner = new Html5Qrcode("fileReader", scannerConfig);
+  }
+
+  // Scan the uploaded file, not the camera view.
+  const decodedText = await fileScanner.scanFile(selectedQRFile, false);
+
+  uploadStatus.textContent = "QR code detected successfully!";
+  handleDecodedQR(decodedText);
+
+ } catch(error) {
+  uploadStatus.textContent = "Could not read a QR code from this image.";
+  showMessage("QR scan failed. Please upload a clear, straight image containing the complete QR code. Make sure it is a SnapGather event QR code.", "error");
+ } finally {
+  scanImageBtn.disabled = false;
+ }
+});
+
+function handleDecodedQR(decodedText) {
+ clearMessage();
+
+ let eventId = "";
+
+ try {
+  // Accept a full gallery URL, including one generated on another host.
+  const url = new URL(decodedText, window.location.href);
+
+  if (url.searchParams.has("id")) {
+   eventId = url.searchParams.get("id");
+  } else {
+   eventId = "";
+  }
+ } catch(error) {
+  eventId = "";
+ }
+
+ // Also accept a plain event ID.
+ if (!eventId && /^event-[a-zA-Z0-9_-]+$/.test(decodedText.trim())) {
+  eventId = decodedText.trim();
+ }
+
+ if (!eventId) {
+  showMessage("This QR code does not contain a valid SnapGather event link.", "error");
+  return;
+ }
+
+ findEvent(eventId);
+}
+
+function findEvent(id) {
+ let events = [];
+
+ try {
+  events = JSON.parse(localStorage.getItem("snapGatherEvents") || "[]");
+ } catch(error) {
+  showMessage("Could not read your saved events. Please try again.", "error");
+  return;
+ }
+
+ const event = events.find(item =>
+  item.id === id && item.owner === user.email
+ );
+
+ if (!event) {
+  result.style.display = "none";
+  showMessage("Event not found in this browser account. Please log in with the account that created this event. Events are currently stored locally, not shared across devices.", "error");
+  return;
+ }
+
+ document.getElementById("resultText").textContent =
+  "Event: " + event.name + " · " + (event.date || "Date not available");
+
+ const galleryURL = new URL("gallery.html", window.location.href);
+ galleryURL.searchParams.set("id", event.id);
+
+ document.getElementById("openGallery").href = galleryURL.href;
+ result.style.display = "block";
+ result.scrollIntoView({behavior:"smooth",block:"center"});
+}
+
+document.getElementById("manualBtn").addEventListener("click", () => {
+ const id = document.getElementById("eventId").value.trim();
+
+ if (!id) {
+  showMessage("Please enter an Event ID.", "error");
+  return;
+ }
+
+ findEvent(id);
+});
+
+</script>
+</body>
+</html>

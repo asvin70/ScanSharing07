@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upload Photos | ScanSharing</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+ font-family:Arial,sans-serif;
+ background:#f5f3ff;color:#211b36;min-height:100vh
+}
+button,input,select{font:inherit}
+.navbar{
+ height:74px;background:white;border-bottom:1px solid #eee9f7;
+ display:flex;align-items:center;justify-content:space-between;
+ padding:0 6%
+}
+.logo{font-size:25px;font-weight:800;color:#7048d8}
+.logo span{color:#ef8bb0}
+.nav-links{display:flex;gap:10px}
+.nav-links a{
+ text-decoration:none;background:#f2edff;color:#6746bb;
+ padding:11px 15px;border-radius:10px;font-size:13px;font-weight:700
+}
+.container{max-width:1150px;margin:35px auto;padding:0 22px}
+.header{margin-bottom:25px}
+.eyebrow{
+ color:#8059df;font-weight:800;font-size:12px;
+ letter-spacing:2px;text-transform:uppercase;margin-bottom:10px
+}
+.header h1{font-size:34px;margin-bottom:9px}
+.header p{color:#827b91;line-height:1.6}
+.layout{
+ display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,.7fr);
+ gap:22px;align-items:start
+}
+.card{
+ background:white;border:1px solid #ebe6f8;border-radius:21px;
+ padding:25px;box-shadow:0 12px 35px #4930800c;margin-bottom:20px
+}
+.section-title{font-size:18px;margin-bottom:7px}
+.section-subtitle{font-size:13px;color:#89839b;line-height:1.5}
+.event-select{margin-top:18px}
+.event-select label{display:block;font-size:13px;font-weight:700;margin-bottom:9px}
+.event-select select{
+ width:100%;padding:14px;border:1px solid #e5e0ef;
+ border-radius:12px;background:white;color:#302747;outline:none
+}
+.dropzone{
+ border:2px dashed #cbb9f4;background:#faf8ff;
+ border-radius:18px;padding:42px 18px;text-align:center;
+ margin-top:22px;cursor:pointer;transition:.2s
+}
+.dropzone:hover,.dropzone.dragover{
+ border-color:#8058e4;background:#f1eaff
+}
+.upload-icon{
+ width:70px;height:70px;margin:0 auto 15px;
+ display:grid;place-items:center;border-radius:22px;
+ background:#eee7ff;font-size:34px
+}
+.dropzone h3{font-size:18px;margin-bottom:9px}
+.dropzone p{font-size:13px;color:#89839b;line-height:1.6}
+.browse-btn{
+ display:inline-block;margin-top:16px;background:#754cda;
+ color:white;border-radius:11px;padding:12px 21px;
+ font-size:13px;font-weight:700
+}
+.hint{font-size:11px!important;margin-top:13px}
+.toolbar{
+ display:flex;justify-content:space-between;align-items:center;
+ gap:12px;margin:24px 0 14px
+}
+.toolbar h3{font-size:16px}
+.count{font-size:12px;color:#7855d0;font-weight:700}
+.photo-grid{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px
+}
+.photo-item{
+ position:relative;overflow:hidden;border-radius:13px;
+ aspect-ratio:1;background:#f0edf6;border:1px solid #eee8f7
+}
+.photo-item img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-item button{
+ position:absolute;right:7px;top:7px;width:28px;height:28px;
+ border:0;border-radius:50%;background:#281d37d9;color:white;
+ cursor:pointer;font-size:17px
+}
+.empty{
+ padding:25px;text-align:center;color:#9991a8;
+ border:1px dashed #e5deef;border-radius:13px;font-size:13px
+}
+.upload-btn{
+ width:100%;padding:16px;border:0;border-radius:13px;
+ background:linear-gradient(100deg,#7046dc,#a16be9);
+ color:white;font-weight:800;font-size:15px;cursor:pointer;
+ box-shadow:0 9px 20px #8058e43b;margin-top:20px
+}
+.upload-btn:disabled{opacity:.55;cursor:not-allowed}
+.progress-wrap{display:none;margin-top:18px}
+.progress-top{display:flex;justify-content:space-between;font-size:12px;margin-bottom:9px}
+.progress-bg{height:9px;border-radius:20px;background:#eee9f7;overflow:hidden}
+.progress-bar{height:100%;width:0;background:#8058e4;transition:width .2s}
+.message{margin-top:15px;font-size:13px;line-height:1.5}
+.success{color:#198754}
+.error{color:#d33b50}
+.side-banner{
+ background:linear-gradient(145deg,#7048d8,#9a6ce8);
+ color:white;border-radius:21px;padding:24px;margin-bottom:20px
+}
+.side-banner .emoji{font-size:35px}
+.side-banner h3{font-size:20px;margin:13px 0 9px}
+.side-banner p{font-size:13px;color:#eee5ff;line-height:1.7}
+.info-card{
+ background:white;border:1px solid #ebe6f8;border-radius:21px;padding:23px
+}
+.info-card h3{font-size:17px;margin-bottom:17px}
+.info-row{display:flex;gap:12px;margin-bottom:16px}
+.info-row:last-child{margin-bottom:0}
+.info-icon{
+ width:34px;height:34px;border-radius:11px;background:#f0eaff;
+ display:grid;place-items:center;flex-shrink:0
+}
+.info-row strong{display:block;font-size:13px;margin:2px 0 5px}
+.info-row p{font-size:12px;color:#89839b;line-height:1.5}
+.gallery-link{
+ display:block;text-align:center;text-decoration:none;
+ color:#7149cf;background:#f2edff;padding:14px;
+ border-radius:12px;font-size:13px;font-weight:700;margin-top:17px
+}
+@media(max-width:800px){
+ .layout{grid-template-columns:1fr}
+ .header h1{font-size:29px}
+}
+@media(max-width:480px){
+ .navbar{padding:0 15px;height:65px}
+ .nav-links a{padding:10px;font-size:11px}
+ .container{padding:0 14px;margin:25px auto}
+ .card{padding:18px}
+ .dropzone{padding:30px 12px}
+ .photo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+</style>
+</head>
+
+<body>
+<header class="navbar">
+ <div class="logo">Scan<span>Sharing.</span></div>
+ <div class="nav-links">
+  <a href="dashboard.html">← Dashboard</a>
+ </div>
+</header>
+
+<main class="container">
+ <section class="header">
+  <div class="eyebrow">Collect your memories</div>
+  <h1>Upload Your Photos 📸</h1>
+  <p>Bring your special moments together. Select an event, add your photos, and build your beautiful event gallery.</p>
+ </section>
+
+ <div class="layout">
+  <section>
+   <div class="card">
+    <h2 class="section-title">Select Your Event</h2>
+    <p class="section-subtitle">Choose the event where you want to add photos.</p>
+
+    <div class="event-select">
+     <label for="eventSelect">Your Events</label>
+     <select id="eventSelect">
+      <option value="">Loading events...</option>
+     </select>
+    </div>
+
+    <div class="dropzone" id="dropzone">
+     <div class="upload-icon">☁️</div>
+     <h3>Drag & Drop Your Photos</h3>
+     <p>Drop your images here or browse files from your device.</p>
+     <span class="browse-btn">Browse Photos</span>
+     <p class="hint">JPG, JPEG, PNG and WEBP · Maximum 20 photos per event</p>
+     <input id="fileInput" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden>
+    </div>
+
+    <div class="toolbar">
+     <h3>Selected Photos</h3>
+     <span class="count" id="count">0 / 20</span>
+    </div>
+    <div id="previewGrid" class="photo-grid">
+     <div class="empty" style="grid-column:1/-1">Your selected photos will appear here.</div>
+    </div>
+
+    <div class="progress-wrap" id="progressWrap">
+     <div class="progress-top">
+      <strong>Saving your photos...</strong>
+      <span id="progressText">0%</span>
+     </div>
+     <div class="progress-bg"><div class="progress-bar" id="progressBar"></div></div>
+    </div>
+
+    <div id="message" class="message"></div>
+    <button class="upload-btn" id="uploadBtn" disabled>Upload Photos to Event</button>
+   </div>
+  </section>
+
+  <aside>
+   <div class="side-banner">
+    <div class="emoji">✨</div>
+    <h3>Make every moment count.</h3>
+    <p>Keep all your event memories organized in one beautiful gallery. Share the event QR code with your guests.</p>
+   </div>
+
+   <div class="info-card">
+    <h3>Upload Guidelines</h3>
+    <div class="info-row">
+     <div class="info-icon">📷</div>
+     <div><strong>Photo formats</strong><p>JPG, JPEG, PNG and WEBP images are supported.</p></div>
+    </div>
+    <div class="info-row">
+     <div class="info-icon">🔢</div>
+     <div><strong>20 photos per event</strong><p>You can store up to 20 photos in each event gallery.</p></div>
+    </div>
+    <div class="info-row">
+     <div class="info-icon">🖼️</div>
+     <div><strong>Automatic optimization</strong><p>Images are resized to help reduce browser storage usage.</p></div>
+    </div>
+    <a href="dashboard.html" class="gallery-link">Back to Dashboard</a>
+   </div>
+  </aside>
+ </div>
+</main>
+
+<script>
+const currentUser = JSON.parse(
+ localStorage.getItem("snapGatherCurrentUser") || "null"
+);
+
+if (!currentUser) {
+ window.location.href = "index.php";
+}
+
+const eventSelect = document.getElementById("eventSelect");
+const fileInput = document.getElementById("fileInput");
+const dropzone = document.getElementById("dropzone");
+const previewGrid = document.getElementById("previewGrid");
+const countLabel = document.getElementById("count");
+const uploadBtn = document.getElementById("uploadBtn");
+const message = document.getElementById("message");
+
+let selectedFiles = [];
+let events = [];
+
+function getEvents() {
+ try {
+  return JSON.parse(localStorage.getItem("snapGatherEvents") || "[]");
+ } catch {
+  return [];
+ }
+}
+
+function getPhotos() {
+ try {
+  return JSON.parse(localStorage.getItem("snapGatherPhotos") || "{}");
+ } catch {
+  return {};
+ }
+}
+
+function loadEvents() {
+ events = getEvents().filter(e => e.owner === currentUser.email);
+
+ eventSelect.innerHTML = "";
+
+ if (!events.length) {
+  eventSelect.innerHTML = '<option value="">No events found. Create an event first.</option>';
+  uploadBtn.disabled = true;
+  return;
+ }
+
+ eventSelect.innerHTML = '<option value="">-- Select an event --</option>';
+
+ events.forEach(event => {
+  const option = document.createElement("option");
+  option.value = event.id;
+  option.textContent = event.name + " (" + event.type + ")";
+  eventSelect.appendChild(option);
+ });
+
+ const requestedId = new URLSearchParams(location.search).get("id");
+ if (requestedId && events.some(e => e.id === requestedId)) {
+  eventSelect.value = requestedId;
+ }
+
+ updateCount();
+}
+
+function selectedEvent() {
+ return events.find(e => e.id === eventSelect.value);
+}
+
+function updateCount() {
+ const event = selectedEvent();
+ const existing = event ? (getPhotos()[event.id] || []).length : 0;
+ const remaining = Math.max(0, 20 - existing);
+
+ countLabel.textContent = existing + " saved + " + selectedFiles.length + " selected / 20";
+
+ uploadBtn.disabled = !event || selectedFiles.length === 0 ||
+  selectedFiles.length > remaining;
+
+ if (event && remaining === 0) {
+  message.textContent = "This event already has 20 photos. No more photos can be added.";
+  message.className = "message error";
+ } else if (selectedFiles.length > remaining) {
+  message.textContent = "You can only add " + remaining + " more photo(s) to this event.";
+  message.className = "message error";
+ } else {
+  message.textContent = "";
+  message.className = "message";
+ }
+}
+
+function renderPreviews() {
+ previewGrid.innerHTML = "";
+
+ if (!selectedFiles.length) {
+  previewGrid.innerHTML = '<div class="empty" style="grid-column:1/-1">Your selected photos will appear here.</div>';
+ }
+
+ selectedFiles.forEach((file, index) => {
+  const url = URL.createObjectURL(file);
+  const item = document.createElement("div");
+  item.className = "photo-item";
+
+  const img = document.createElement("img");
+  img.src = url;
+  img.alt = file.name;
+  img.onload = () => URL.revokeObjectURL(url);
+
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.textContent = "×";
+  remove.setAttribute("aria-label", "Remove " + file.name);
+  remove.onclick = () => {
+   selectedFiles.splice(index, 1);
+   renderPreviews();
+   updateCount();
+  };
+
+  item.append(img, remove);
+  previewGrid.appendChild(item);
+ });
+
+ updateCount();
+}
+
+function addFiles(files) {
+ const allowed = ["image/jpeg", "image/png", "image/webp"];
+ const event = selectedEvent();
+
+ if (!event) {
+  message.textContent = "Please select an event first.";
+  message.className = "message error";
+  return;
+ }
+
+ const existing = (getPhotos()[event.id] || []).length;
+ const remaining = Math.max(0, 20 - existing - selectedFiles.length);
+
+ const incoming = Array.from(files);
+ let added = 0;
+
+ for (const file of incoming) {
+  if (!allowed.includes(file.type)) continue;
+  if (added >= remaining) break;
+  selectedFiles.push(file);
+  added++;
+ }
+
+ if (added < incoming.length) {
+  message.textContent = "Some files were skipped. Check the file format and the 20-photo limit.";
+  message.className = "message error";
+ } else {
+  message.textContent = "";
+  message.className = "message";
+ }
+
+ renderPreviews();
+}
+
+dropzone.addEventListener("click", () => {
+ if (selectedEvent()) fileInput.click();
+ else {
+  message.textContent = "Please select an event first.";
+  message.className = "message error";
+ }
+});
+
+fileInput.addEventListener("change", () => {
+ addFiles(fileInput.files);
+ fileInput.value = "";
+});
+
+dropzone.addEventListener("dragover", e => {
+ e.preventDefault();
+ dropzone.classList.add("dragover");
+});
+
+dropzone.addEventListener("dragleave", () => {
+ dropzone.classList.remove("dragover");
+});
+
+dropzone.addEventListener("drop", e => {
+ e.preventDefault();
+ dropzone.classList.remove("dragover");
+ addFiles(e.dataTransfer.files);
+});
+
+eventSelect.addEventListener("change", () => {
+ selectedFiles = [];
+ renderPreviews();
+ updateCount();
+});
+
+function compressImage(file) {
+ return new Promise((resolve, reject) => {
+  const reader = new FileReader();
+
+  reader.onerror = () => reject(new Error("Could not read " + file.name));
+
+  reader.onload = () => {
+   const img = new Image();
+
+   img.onerror = () => reject(new Error("Invalid image: " + file.name));
+
+   img.onload = () => {
+    const maxSize = 1200;
+    const ratio = Math.min(1, maxSize / Math.max(img.width, img.height));
+    const canvas = document.createElement("canvas");
+
+    canvas.width = Math.round(img.width * ratio);
+    canvas.height = Math.round(img.height * ratio);
+
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    resolve(canvas.toDataURL("image/jpeg", 0.75));
+   };
+
+   img.src = reader.result;
+  };
+
+  reader.readAsDataURL(file);
+ });
+}
+
+uploadBtn.addEventListener("click", async () => {
+ const event = selectedEvent();
+ if (!event || !selectedFiles.length) return;
+
+ const existingPhotos = getPhotos();
+ const photos = existingPhotos[event.id] || [];
+
+ if (photos.length + selectedFiles.length > 20) {
+  message.textContent = "The event photo limit is 20. Please remove some selected photos.";
+  message.className = "message error";
+  return;
+ }
+
+ uploadBtn.disabled = true;
+ document.getElementById("progressWrap").style.display = "block";
+ message.textContent = "";
+ message.className = "message";
+
+ const filesToUpload = [...selectedFiles];
+
+ try {
+  for (let i = 0; i < filesToUpload.length; i++) {
+   const imageData = await compressImage(filesToUpload[i]);
+   photos.push(imageData);
+
+   const percent = Math.round(((i + 1) / filesToUpload.length) * 100);
+   document.getElementById("progressBar").style.width = percent + "%";
+   document.getElementById("progressText").textContent = percent + "%";
+  }
+
+  existingPhotos[event.id] = photos;
+
+  localStorage.setItem("snapGatherPhotos", JSON.stringify(existingPhotos));
+
+  selectedFiles = [];
+  renderPreviews();
+
+  message.textContent = "✓ Photos uploaded successfully! Your event gallery is ready.";
+  message.className = "message success";
+
+  const galleryURL = new URL("gallery.html", location.href);
+  galleryURL.searchParams.set("id", event.id);
+
+  const link = document.createElement("a");
+  link.href = galleryURL.href;
+  link.textContent = " Open Event Gallery →";
+  link.style.display = "inline-block";
+  link.style.marginTop = "8px";
+  link.style.color = "#7048d8";
+  link.style.fontWeight = "bold";
+  message.appendChild(document.createElement("br"));
+  message.appendChild(link);
+
+ } catch (error) {
+  message.textContent = "Upload could not be completed. Browser storage may be full. Try fewer or smaller photos.";
+  message.className = "message error";
+  console.error(error);
+ } finally {
+  uploadBtn.disabled = false;
+  updateCount();
+ }
+});
+
+loadEvents();
+</script>
+</body>
+</html>

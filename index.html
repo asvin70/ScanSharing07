@@ -1,0 +1,836 @@
+HTML
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScanSharing | Welcome</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    color: #252044;
+    background: linear-gradient(135deg, #21145b, #5142b8, #8b65db);
+    overflow-x: hidden;
+}
+
+button, input {
+    font: inherit;
+}
+
+.page {
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(2px);
+    opacity: .25;
+    pointer-events: none;
+}
+
+.blob-one {
+    width: 400px;
+    height: 400px;
+    background: #ff9fc9;
+    top: -150px;
+    left: -100px;
+}
+
+.blob-two {
+    width: 500px;
+    height: 500px;
+    background: #5ed9ff;
+    bottom: -250px;
+    right: -100px;
+}
+
+.navbar {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 7%;
+    color: white;
+}
+
+.logo {
+    font-size: 27px;
+    font-weight: 900;
+}
+
+.logo span {
+    color: #ffb2d2;
+}
+
+.nav-tag {
+    padding: 10px 17px;
+    border: 1px solid #ffffff55;
+    border-radius: 30px;
+    color: white;
+    font-size: 13px;
+}
+
+.main {
+    position: relative;
+    z-index: 1;
+    max-width: 1250px;
+    margin: auto;
+    padding: 45px 35px 65px;
+    display: grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap: 65px;
+    align-items: center;
+}
+
+/* LEFT SECTION */
+
+.hero {
+    color: white;
+}
+
+.hero-tag {
+    display: inline-block;
+    background: #ffffff20;
+    border: 1px solid #ffffff40;
+    border-radius: 30px;
+    padding: 10px 17px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    font-weight: bold;
+    margin-bottom: 24px;
+}
+
+.hero h1 {
+    font-size: clamp(38px, 5vw, 62px);
+    line-height: 1.13;
+    margin-bottom: 22px;
+}
+
+.hero h1 span {
+    color: #ffb1d0;
+}
+
+.hero > p {
+    color: #e1ddff;
+    font-size: 16px;
+    line-height: 1.8;
+    max-width: 500px;
+}
+
+.hero-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 35px;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #ffffff16;
+    border: 1px solid #ffffff25;
+    padding: 15px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.feature-icon {
+    width: 43px;
+    height: 43px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: #ffffff25;
+    font-size: 22px;
+}
+
+.feature strong {
+    font-size: 13px;
+    display: block;
+}
+
+.feature small {
+    display: block;
+    color: #ded9ff;
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+/* FLOATING CARDS */
+
+.memory-card {
+    margin-top: 30px;
+    max-width: 440px;
+    background: #ffffff;
+    padding: 14px;
+    border-radius: 19px;
+    color: #302653;
+    box-shadow: 0 15px 40px #160c4b50;
+    transform: rotate(-2deg);
+}
+
+.memory-photos {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 7px;
+    margin-bottom: 12px;
+}
+
+.memory-photo {
+    height: 95px;
+    border-radius: 11px;
+    display: grid;
+    place-items: center;
+    font-size: 34px;
+}
+
+.memory-photo:nth-child(1) {
+    background: linear-gradient(135deg,#ffb3d0,#ffdfec);
+}
+
+.memory-photo:nth-child(2) {
+    background: linear-gradient(135deg,#9bd9ff,#d6f3ff);
+}
+
+.memory-photo:nth-child(3) {
+    background: linear-gradient(135deg,#c6b0ff,#ece2ff);
+}
+
+.memory-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.memory-info strong {
+    font-size: 13px;
+}
+
+.memory-info small {
+    display: block;
+    color: #888;
+    margin-top: 5px;
+    font-size: 11px;
+}
+
+.memory-count {
+    background: #eee8ff;
+    color: #7048d8;
+    padding: 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+/* LOGIN PANEL */
+
+.login-card {
+    background: #ffffff;
+    border-radius: 25px;
+    padding: 35px;
+    box-shadow: 0 25px 80px #150b4950;
+}
+
+.card-icon {
+    width: 55px;
+    height: 55px;
+    display: grid;
+    place-items: center;
+    background: #eee8ff;
+    border-radius: 16px;
+    font-size: 27px;
+    margin-bottom: 20px;
+}
+
+.login-card h2 {
+    font-size: 28px;
+    margin-bottom: 9px;
+}
+
+.subtitle {
+    color: #89839b;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    margin-bottom: 17px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 9px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #e6e1ef;
+    border-radius: 12px;
+    outline: none;
+    color: #302747;
+    background: #faf9fd;
+    transition: .2s;
+}
+
+.form-group input:focus {
+    border-color: #8058e4;
+    box-shadow: 0 0 0 3px #8058e41a;
+}
+
+.password-wrap {
+    position: relative;
+}
+
+.password-wrap input {
+    padding-right: 65px;
+}
+
+.show-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 0;
+    background: transparent;
+    color: #7048d8;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.submit-btn {
+    width: 100%;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    background: linear-gradient(100deg,#7048d8,#a16be9);
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 8px 20px #8058e440;
+    transition: .2s;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px #8058e460;
+}
+
+.switch-text {
+    text-align: center;
+    color: #89839b;
+    font-size: 13px;
+    margin-top: 22px;
+}
+
+.switch-text button {
+    border: none;
+    background: none;
+    color: #7048d8;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #aaa3b6;
+    font-size: 11px;
+    margin: 22px 0;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #eeeaf4;
+}
+
+.demo-btn {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #e6def7;
+    border-radius: 12px;
+    color: #7048d8;
+    background: #f7f3ff;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.demo-btn:hover {
+    background: #eee8ff;
+}
+
+.message {
+    margin-top: 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.error {
+    color: #d9364f;
+}
+
+.success {
+    color: #16834d;
+}
+
+.footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 20px;
+    color: #e3ddff;
+    font-size: 12px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width: 900px) {
+    .main {
+        grid-template-columns: 1fr;
+        max-width: 650px;
+        gap: 45px;
+    }
+
+    .hero h1 {
+        font-size: 43px;
+    }
+
+    .memory-card {
+        max-width: 100%;
+    }
+}
+
+@media(max-width: 500px) {
+    .navbar {
+        padding: 20px;
+    }
+
+    .main {
+        padding: 25px 16px 45px;
+        gap: 35px;
+    }
+
+    .hero h1 {
+        font-size: 36px;
+    }
+
+    .hero-features {
+        grid-template-columns: 1fr;
+    }
+
+    .login-card {
+        padding: 24px 19px;
+    }
+
+    .login-card h2 {
+        font-size: 24px;
+    }
+
+    .nav-tag {
+        font-size: 10px;
+        padding: 8px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+<div class="blob blob-one"></div>
+<div class="blob blob-two"></div>
+
+<header class="navbar">
+    <div class="logo">📸 Scan<span>Sharing.</span></div>
+    <div class="nav-tag">Memories Made Together ✨</div>
+</header>
+
+<main class="main">
+
+    <!-- LEFT SIDE -->
+    <section class="hero">
+
+        <div class="hero-tag">
+            YOUR MEMORIES, ONE PLACE
+        </div>
+
+        <h1>
+            Every Moment<br>
+            Deserves to Be<br>
+            <span>Remembered.</span>
+        </h1>
+
+        <p>
+            Bring students, teachers, friends and families together.
+            Create events, share photos and collect beautiful memories
+            in one simple place.
+        </p>
+
+        <div class="hero-features">
+
+            <div class="feature">
+                <div class="feature-icon">📸</div>
+                <div>
+                    <strong>Photo Sharing</strong>
+                    <small>Collect special moments</small>
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">📱</div>
+                <div>
+                    <strong>QR Gallery</strong>
+                    <small>Scan and view memories</small>
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">🎓</div>
+                <div>
+                    <strong>For Students</strong>
+                    <small>Save campus memories</small>
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">👩‍🏫</div>
+                <div>
+                    <strong>For Teachers</strong>
+                    <small>Organize school events</small>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="memory-card">
+            <div class="memory-photos">
+                <div class="memory-photo">🎓</div>
+                <div class="memory-photo">🎉</div>
+                <div class="memory-photo">📷</div>
+            </div>
+
+            <div class="memory-info">
+                <div>
+                    <strong>School Annual Celebration</strong>
+                    <small>Memories worth keeping forever</small>
+                </div>
+                <div class="memory-count">✦ Memories</div>
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- RIGHT SIDE LOGIN CARD -->
+    <section class="login-card">
+
+        <div class="card-icon">👋</div>
+
+        <h2 id="formTitle">Welcome Back!</h2>
+
+        <p class="subtitle" id="formSubtitle">
+            Log in to continue collecting your memories.
+        </p>
+
+        <form id="authForm">
+
+            <div class="form-group" id="nameGroup" style="display:none;">
+                <label for="name">Full Name</label>
+                <input
+                    type="text"
+                    id="name"
+                    placeholder="Enter your full name"
+                    autocomplete="name"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    required
+                    autocomplete="email"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="password-wrap">
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                        required
+                        autocomplete="current-password"
+                    >
+                    <button
+                        type="button"
+                        class="show-password"
+                        onclick="togglePassword()"
+                    >Show</button>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                Login to ScanSharing →
+            </button>
+
+        </form>
+
+        <div id="message" class="message"></div>
+
+        <p class="switch-text">
+            <span id="switchLabel">Don't have an account?</span>
+            <button type="button" id="switchBtn">Create Account</button>
+        </p>
+
+        <div class="divider">OR</div>
+
+        <button type="button" class="demo-btn" id="demoBtn">
+            ✨ Continue with Demo Account
+        </button>
+
+    </section>
+
+</main>
+
+<footer class="footer">
+    © 2026 SnapGather. Collect Memories. Share Happiness.
+</footer>
+
+</div>
+
+<script>
+
+// ===================================
+// SNAPGATHER LOGIN AND SIGNUP
+// ===================================
+
+let isSignup = false;
+
+const authForm = document.getElementById("authForm");
+const formTitle = document.getElementById("formTitle");
+const formSubtitle = document.getElementById("formSubtitle");
+const nameGroup = document.getElementById("nameGroup");
+const nameInput = document.getElementById("name");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const submitBtn = document.getElementById("submitBtn");
+const switchBtn = document.getElementById("switchBtn");
+const switchLabel = document.getElementById("switchLabel");
+const message = document.getElementById("message");
+
+// Get registered accounts
+function getAccounts() {
+    try {
+        const accounts = JSON.parse(
+            localStorage.getItem("snapGatherAccounts") || "[]"
+        );
+
+        return Array.isArray(accounts) ? accounts : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+// Save accounts
+function saveAccounts(accounts) {
+    localStorage.setItem(
+        "snapGatherAccounts",
+        JSON.stringify(accounts)
+    );
+}
+
+// Switch login/signup
+switchBtn.addEventListener("click", function() {
+
+    isSignup = !isSignup;
+
+    message.textContent = "";
+    message.className = "message";
+
+    if (isSignup) {
+
+        formTitle.textContent = "Create Your Account";
+        formSubtitle.textContent =
+            "Join SnapGather and start collecting memories.";
+
+        nameGroup.style.display = "block";
+        nameInput.required = true;
+
+        submitBtn.textContent = "Create My Account →";
+        switchLabel.textContent = "Already have an account?";
+        switchBtn.textContent = "Login";
+
+    } else {
+
+        formTitle.textContent = "Welcome Back!";
+        formSubtitle.textContent =
+            "Log in to continue collecting your memories.";
+
+        nameGroup.style.display = "none";
+        nameInput.required = false;
+
+        submitBtn.textContent = "Login to SnapGather →";
+        switchLabel.textContent = "Don't have an account?";
+        switchBtn.textContent = "Create Account";
+    }
+
+});
+
+// Login / Signup
+authForm.addEventListener("submit", function(e) {
+
+    e.preventDefault();
+
+    const email = emailInput.value.trim().toLowerCase();
+    const password = passwordInput.value;
+    const name = nameInput.value.trim();
+
+    if (isSignup) {
+
+        if (!name) {
+            showMessage("Please enter your full name.", "error");
+            return;
+        }
+
+        const accounts = getAccounts();
+
+        const exists = accounts.some(
+            account => account.email.toLowerCase() === email
+        );
+
+        if (exists) {
+            showMessage(
+                "This email is already registered. Please login.",
+                "error"
+            );
+            return;
+        }
+
+        const newAccount = {
+            name: name,
+            email: email,
+            password: password
+        };
+
+        accounts.push(newAccount);
+
+        try {
+            saveAccounts(accounts);
+        } catch (error) {
+            showMessage("Could not save your account. Browser storage may be full.", "error");
+            return;
+        }
+
+        showMessage("Account created successfully!", "success");
+
+        localStorage.setItem(
+            "snapGatherCurrentUser",
+            JSON.stringify({
+                name: name,
+                email: email
+            })
+        );
+
+        setTimeout(function() {
+            window.location.href = "dashboard.html";
+        }, 500);
+
+    } else {
+
+        const accounts = getAccounts();
+
+        const account = accounts.find(
+            item =>
+                item.email.toLowerCase() === email &&
+                item.password === password
+        );
+
+        if (!account) {
+            showMessage(
+                "Incorrect email or password. Please try again.",
+                "error"
+            );
+            return;
+        }
+
+        localStorage.setItem(
+            "snapGatherCurrentUser",
+            JSON.stringify({
+                name: account.name,
+                email: account.email
+            })
+        );
+
+        window.location.href = "dashboard.html";
+    }
+
+});
+
+// Demo login
+document.getElementById("demoBtn").addEventListener("click", function() {
+
+    localStorage.setItem(
+        "snapGatherCurrentUser",
+        JSON.stringify({
+            name: "Demo User",
+            email: "demo@snapgather.com"
+        })
+    );
+
+    window.location.href = "dashboard.html";
+
+});
+
+// Show messages
+function showMessage(text, type) {
+    message.textContent = text;
+    message.className = "message " + type;
+}
+
+// Show / hide password
+function togglePassword() {
+
+    if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        document.querySelector(".show-password").textContent = "Hide";
+    } else {
+        passwordInput.type = "password";
+        document.querySelector(".show-password").textContent = "Show";
+    }
+
+}
+
+</script>
+
+</body>
+</html>

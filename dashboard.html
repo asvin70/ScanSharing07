@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScanSharing Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+        <div class="brand">📸 ScanSharing</div>
+
+        <nav>
+            <a class="active" href="dashboard.html">⌂ Dashboard</a>
+            <a href="scan.html">▦ Scan QR Code</a>
+            <a href="editor.html">✎ Photo Editor</a>
+            <a href="create-event.html">＋ Create Event</a>
+            <a href="upload.html">⇧ Upload Photos</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <button onclick="toggleTheme()">🌙 Dark / Light</button>
+            <button onclick="logout()">↪ Logout</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+            <div>
+                <h2>Dashboard</h2>
+                <p>Manage your memories in one place.</p>
+            </div>
+            <div class="profile" id="profileName">Welcome!</div>
+        </header>
+
+        <section class="welcome">
+            <div>
+                <span class="tag">YOUR MEMORIES, ONE PLACE</span>
+                <h1>Welcome to ScanSharing! 👋</h1>
+                <p>Create events, scan QR codes and edit your favorite photos.</p>
+                <a class="primary-btn" href="create-event.html">+ Create New Event</a>
+            </div>
+            <div class="welcome-icon">📸</div>
+        </section>
+
+        <h2 class="section-heading">Explore ScanSharing</h2>
+
+        <section class="feature-grid">
+
+            <a href="scan.html" class="feature-card purple">
+                <div class="feature-icon">▦</div>
+                <h3>Scan QR Code</h3>
+                <p>Scan an event QR code to view its photos.</p>
+                <span>Open Scanner →</span>
+            </a>
+
+            <a href="editor.html" class="feature-card pink">
+                <div class="feature-icon">✎</div>
+                <h3>Photo Editor</h3>
+                <p>Crop, rotate and apply filters to your photos.</p>
+                <span>Open Editor →</span>
+            </a>
+
+            <a href="create-event.html" class="feature-card orange">
+                <div class="feature-icon">＋</div>
+                <h3>Create Event</h3>
+                <p>Create a wedding, birthday or other event.</p>
+                <span>Create Event →</span>
+            </a>
+
+            <a href="upload.html" class="feature-card blue">
+                <div class="feature-icon">⇧</div>
+                <h3>Upload Photos</h3>
+                <p>Upload up to 20 photos to your event.</p>
+                <span>Upload Now →</span>
+            </a>
+
+        </section>
+
+        <section class="bottom-grid">
+            <div class="panel">
+                <h3>My Events</h3>
+                <div id="eventList">
+                    <p class="empty">No events created yet. Create your first event!</p>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>My Profile</h3>
+                <div class="profile-details">
+                    <div class="avatar">👤</div>
+                    <div>
+                        <strong id="userName">User</strong>
+                        <p id="userEmail">Email</p>
+                    </div>
+                </div>
+                <button class="secondary-btn" onclick="logout()">Logout</button>
+            </div>
+        </section>
+
+        <footer>© 2026 ScanSharing. Collect memories. Share happiness.</footer>
+
+    </main>
+</div>
+
+<script src="dashboard.js"></script>
+</body>
+</html>

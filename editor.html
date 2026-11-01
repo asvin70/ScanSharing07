@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScanSharing - Photo Studio</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+
+<style>
+:root {
+    --bg: #11111b;
+    --panel: #1c1c2b;
+    --panel2: #242438;
+    --text: #f7f6ff;
+    --muted: #a3a1b8;
+    --accent: #9173ff;
+    --border: #34334a;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background:
+        radial-gradient(ellipse at 20% 0%, #34245d 0%, transparent 35%),
+        radial-gradient(ellipse at 90% 100%, #2a2049 0%, transparent 35%),
+        var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+button, input {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.topbar {
+    height: 75px;
+    padding: 0 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #151522dd;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.brand-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg,#9975ff,#e56bc4);
+}
+
+.top-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn {
+    padding: 11px 16px;
+    border: 1px solid var(--border);
+    background: var(--panel2);
+    color: white;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.btn:hover {
+    border-color: var(--accent);
+}
+
+.btn-primary {
+    border: none;
+    background: linear-gradient(110deg,#8061f5,#b45ce8);
+}
+
+.btn-primary:hover {
+    opacity: .9;
+}
+
+.page {
+    max-width: 1450px;
+    margin: auto;
+    padding: 28px;
+}
+
+.heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    gap: 15px;
+}
+
+.heading h1 {
+    font-size: 27px;
+    margin-bottom: 7px;
+}
+
+.heading p {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.editor-layout {
+    display: grid;
+    grid-template-columns: 250px minmax(0,1fr) 280px;
+    gap: 18px;
+    align-items: start;
+}
+
+.panel {
+    background: linear-gradient(145deg,#202032,#191927);
+    border: 1px solid var(--border);
+    border-radius: 17px;
+    overflow: hidden;
+}
+
+.panel-heading {
+    padding: 19px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.panel-body {
+    padding: 17px;
+}
+
+.tool-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+}
+
+.tool {
+    min-height: 78px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #27273b;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.tool span {
+    font-size: 23px;
+}
+
+.tool:hover, .tool.selected {
+    background: #393052;
+    border-color: var(--accent);
+    color: #c9baff;
+}
+
+.workspace {
+    min-height: 590px;
+    display: flex;
+    flex-direction: column;
+}
+
+.workspace-top {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px 19px;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    gap: 10px;
+}
+
+.stage {
+    flex: 1;
+    min-height: 450px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image:
+        linear-gradient(45deg,#202030 25%,transparent 25%),
+        linear-gradient(-45deg,#202030 25%,transparent 25%),
+        linear-gradient(45deg,transparent 75%,#202030 75%),
+        linear-gradient(-45deg,transparent 75%,#202030 75%);
+    background-size: 24px 24px;
+    background-position: 0 0,0 12px,12px -12px,-12px 0;
+}
+
+#image {
+    display: none;
+    max-width: 100%;
+    max-height: 500px;
+}
+
+.stage.empty {
+    flex-direction: column;
+    gap: 15px;
+}
+
+.upload-icon {
+    font-size: 55px;
+}
+
+.upload-title {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.upload-info {
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+}
+
+.upload-button {
+    padding: 13px 22px;
+    border-radius: 10px;
+    background: linear-gradient(110deg,#8061f5,#bd61db);
+    color: white;
+    border: 0;
+    font-weight: 700;
+    margin-top: 8px;
+}
+
+.workspace-bottom {
+    border-top: 1px solid var(--border);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.control-group {
+    margin-bottom: 24px;
+}
+
+.control-title {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.control-title span:last-child {
+    color: #b7a5ff;
+}
+
+input[type="range"] {
+    width: 100%;
+    accent-color: #9877ff;
+}
+
+.presets {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+}
+
+.preset {
+    border: 1px solid var(--border);
+    background: #29293e;
+    border-radius: 10px;
+    color: white;
+    padding: 11px 5px;
+    font-size: 11px;
+}
+
+.preset:hover {
+    border-color: var(--accent);
+}
+
+.preset-preview {
+    height: 40px;
+    border-radius: 6px;
+    margin-bottom: 7px;
+    background: linear-gradient(135deg,#e8a47b,#8060bc,#303a68);
+}
+
+.preset:nth-child(2) .preset-preview {
+    filter: grayscale(1);
+}
+
+.preset:nth-child(3) .preset-preview {
+    filter: sepia(1);
+}
+
+.preset:nth-child(4) .preset-preview {
+    filter: saturate(1.8);
+}
+
+.divider {
+    height: 1px;
+    background: var(--border);
+    margin: 20px 0;
+}
+
+.range-label {
+    color: var(--muted);
+    font-size: 11px;
+    margin-bottom: 8px;
+}
+
+.reset-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: #d5caff;
+    padding: 12px;
+    border-radius: 10px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#fileInput {
+    display: none;
+}
+
+.crop-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+.crop-actions button {
+    flex: 1;
+    min-width: 90px;
+}
+
+.notice {
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.6;
+    margin-top: 15px;
+}
+
+@media(max-width:1100px) {
+    .editor-layout {
+        grid-template-columns: 210px minmax(0,1fr);
+    }
+
+    .settings-panel {
+        grid-column: 1 / -1;
+    }
+}
+
+@media(max-width:700px) {
+    .page {
+        padding: 15px;
+    }
+
+    .topbar {
+        padding: 0 14px;
+    }
+
+    .topbar .btn {
+        padding: 9px;
+    }
+
+    .heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .editor-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .tools-panel {
+        order: 2;
+    }
+
+    .workspace {
+        order: 1;
+        min-height: 400px;
+    }
+
+    .settings-panel {
+        order: 3;
+    }
+
+    .stage {
+        min-height: 330px;
+        padding: 15px;
+    }
+
+    #image {
+        max-height: 350px;
+    }
+
+    .tool-grid {
+        grid-template-columns: repeat(4,1fr);
+    }
+
+    .tool {
+        min-height: 70px;
+        font-size: 10px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+    <div class="brand">
+        <div class="brand-icon">📸</div>
+        ScanSharing <span style="color:#a58aff">Studio</span>
+    </div>
+
+    <div class="top-actions">
+        <a href="dashboard.html" style="text-decoration:none">
+            <button class="btn">← Dashboard</button>
+        </a>
+        <button class="btn btn-primary" id="downloadTop">⬇ Export</button>
+    </div>
+</header>
+
+<main class="page">
+
+    <section class="heading">
+        <div>
+            <h1>Photo Editor ✨</h1>
+            <p>Make every memory look beautiful. Edit, enhance and download.</p>
+        </div>
+        <div style="color:#b8a6ff;font-size:12px;font-weight:600">
+            ● PHOTO STUDIO
+        </div>
+    </section>
+
+    <section class="editor-layout">
+
+        <!-- LEFT TOOLS -->
+        <aside class="panel tools-panel">
+            <div class="panel-heading">🛠 Editing Tools</div>
+            <div class="panel-body">
+                <div class="tool-grid">
+                    <button class="tool" onclick="enableCrop()">
+                        <span>▣</span>Crop
+                    </button>
+                    <button class="tool" onclick="rotate(-90)">
+                        <span>↶</span>Rotate Left
+                    </button>
+                    <button class="tool" onclick="rotate(90)">
+                        <span>↷</span>Rotate Right
+                    </button>
+                    <button class="tool" onclick="flip('x')">
+                        <span>⇋</span>Flip H
+                    </button>
+                    <button class="tool" onclick="flip('y')">
+                        <span>⇵</span>Flip V
+                    </button>
+                    <button class="tool" onclick="applyPreset('original')">
+                        <span>◉</span>Original
+                    </button>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="control-title">✂ Crop Options</div>
+                <div class="crop-actions">
+                    <button class="btn" onclick="setAspect(NaN)">Free</button>
+                    <button class="btn" onclick="setAspect(1)">1:1</button>
+                    <button class="btn" onclick="setAspect(16/9)">16:9</button>
+                    <button class="btn" onclick="setAspect(4/5)">4:5</button>
+                </div>
+                <div class="crop-actions">
+                    <button class="btn btn-primary" onclick="applyCrop()">Apply Crop</button>
+                    <button class="btn" onclick="cancelCrop()">Cancel</button>
+                </div>
+
+                <div class="divider"></div>
+                <button class="reset-btn" onclick="resetEditor()">↻ Reset All Edits</button>
+
+                <p class="notice">Tip: Upload a photo first. Then select your editing tools and export your final image.</p>
+            </div>
+        </aside>
+
+        <!-- CENTER WORKSPACE -->
+        <section class="panel workspace">
+            <div class="workspace-top">
+                <span>WORKSPACE / CANVAS</span>
+                <span id="imageStatus">No image selected</span>
+            </div>
+
+            <div class="stage empty" id="stage">
+                <div class="upload-icon">🖼️</div>
+                <div class="upload-title">Your creative space starts here</div>
+                <p class="upload-info">Upload a photo to begin editing your memories.</p>
+                <button class="upload-button" onclick="document.getElementById('fileInput').click()">
+                    + Upload Your Photo
+                </button>
+                <p class="upload-info">JPG, PNG, WEBP supported</p>
+            </div>
+
+            <div class="workspace-bottom">
+                <span id="dimensions">Canvas: Empty</span>
+                <span>ScanSharing Studio</span>
+            </div>
+        </section>
+
+        <!-- RIGHT SETTINGS -->
+        <aside class="panel settings-panel">
+            <div class="panel-heading">🎨 Adjustments</div>
+            <div class="panel-body">
+
+                <div class="control-group">
+                    <div class="control-title">
+                        <span>Brightness</span>
+                        <span id="brightnessValue">100%</span>
+                    </div>
+                    <input type="range" id="brightness" min="0" max="200" value="100">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-title">
+                        <span>Contrast</span>
+                        <span id="contrastValue">100%</span>
+                    </div>
+                    <input type="range" id="contrast" min="0" max="200" value="100">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-title">
+                        <span>Saturation</span>
+                        <span id="saturationValue">100%</span>
+                    </div>
+                    <input type="range" id="saturation" min="0" max="200" value="100">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-title">
+                        <span>Blur</span>
+                        <span id="blurValue">0px</span>
+                    </div>
+                    <input type="range" id="blur" min="0" max="10" value="0" step="0.5">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-title">
+                        <span>Grayscale</span>
+                        <span id="grayscaleValue">0%</span>
+                    </div>
+                    <input type="range" id="grayscale" min="0" max="100" value="0">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-title">
+                        <span>Sepia</span>
+                        <span id="sepiaValue">0%</span>
+                    </div>
+                    <input type="range" id="sepia" min="0" max="100" value="0">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-title">
+                        <span>Hue</span>
+                        <span id="hueValue">0°</span>
+                    </div>
+                    <input type="range" id="hue" min="0" max="360" value="0">
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="control-title">🌈 Creative Presets</div>
+                <div class="presets">
+                    <button class="preset" onclick="applyPreset('vivid')">
+                        <div class="preset-preview"></div>Vivid
+                    </button>
+                    <button class="preset" onclick="applyPreset('mono')">
+                        <div class="preset-preview"></div>Mono
+                    </button>
+                    <button class="preset" onclick="applyPreset('vintage')">
+                        <div class="preset-preview"></div>Vintage
+                    </button>
+                    <button class="preset" onclick="applyPreset('vibrant')">
+                        <div class="preset-preview"></div>Vibrant
+                    </button>
+                </div>
+
+                <div class="divider"></div>
+                <button class="btn btn-primary" style="width:100%" id="downloadButton">
+                    ⬇ Download Edited Photo
+                </button>
+            </div>
+        </aside>
+
+    </section>
+</main>
+
+<input type="file" id="fileInput" accept="image/*">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+
+<script>
+const currentUser = JSON.parse(
+    localStorage.getItem("snapGatherCurrentUser") || "null"
+);
+
+if (!currentUser) {
+    location.href = "index.php";
+}
+
+const fileInput = document.getElementById("fileInput");
+const stage = document.getElementById("stage");
+const image = document.createElement("img");
+
+image.id = "image";
+image.alt = "Photo being edited";
+
+const settings = {
+    brightness: 100,
+    contrast: 100,
+    saturation: 100,
+    blur: 0,
+    grayscale: 0,
+    sepia: 0,
+    hue: 0
+};
+
+let originalImage = null;
+let rotation = 0;
+let flipX = 1;
+let flipY = 1;
+let cropper = null;
+
+const sliderNames = Object.keys(settings);
+
+fileInput.addEventListener("change", function() {
+    const file = this.files[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+        alert("Please select a valid image.");
+        return;
+    }
+
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        originalImage = new Image();
+
+        originalImage.onload = function() {
+            image.src = e.target.result;
+            image.style.display = "block";
+
+            stage.classList.remove("empty");
+            stage.innerHTML = "";
+            stage.appendChild(image);
+
+            rotation = 0;
+            flipX = 1;
+            flipY = 1;
+
+            resetSettings();
+            updatePreview();
+
+            document.getElementById("imageStatus").textContent = file.name;
+            document.getElementById("dimensions").textContent =
+                originalImage.width + " × " + originalImage.height;
+        };
+
+        originalImage.src = e.target.result;
+    };
+
+    reader.readAsDataURL(file);
+});
+
+function updatePreview() {
+    if (!originalImage) return;
+
+    if (cropper) return;
+
+    const filter =
+        `brightness(${settings.brightness}%) ` +
+        `contrast(${settings.contrast}%) ` +
+        `saturate(${settings.saturation}%) ` +
+        `blur(${settings.blur}px) ` +
+        `grayscale(${settings.grayscale}%) ` +
+        `sepia(${settings.sepia}%) ` +
+        `hue-rotate(${settings.hue}deg)`;
+
+    image.style.filter = filter;
+    image.style.transform =
+        `rotate(${rotation}deg) scale(${flipX}, ${flipY})`;
+}
+
+sliderNames.forEach(name => {
+    const slider = document.getElementById(name);
+    const value = document.getElementById(name + "Value");
+
+    slider.addEventListener("input", function() {
+        settings[name] = Number(this.value);
+
+        value.textContent = name === "blur"
+            ? this.value + "px"
+            : name === "hue"
+            ? this.value + "°"
+            : this.value + "%";
+
+        updatePreview();
+    });
+});
+
+function resetSettings() {
+    sliderNames.forEach(name => {
+        settings[name] =
+            name === "brightness" ||
+            name === "contrast" ||
+            name === "saturation" ? 100 : 0;
+
+        document.getElementById(name).value = settings[name];
+
+        document.getElementById(name + "Value").textContent =
+            name === "hue" ? "0°" :
+            name === "blur" ? "0px" : settings[name] + "%";
+    });
+}
+
+function rotate(degrees) {
+    if (!originalImage) return;
+    rotation = (rotation + degrees + 360) % 360;
+    updatePreview();
+}
+
+function flip(direction) {
+    if (!originalImage) return;
+
+    if (direction === "x") flipX *= -1;
+    if (direction === "y") flipY *= -1;
+
+    updatePreview();
+}
+
+function applyPreset(type) {
+    if (!originalImage) {
+        alert("Please upload a photo first.");
+        return;
+    }
+
+    resetSettings();
+
+    if (type === "vivid") {
+        settings.saturation = 150;
+        settings.contrast = 115;
+        settings.brightness = 105;
+    }
+
+    if (type === "mono") {
+        settings.grayscale = 100;
+        settings.contrast = 115;
+    }
+
+    if (type === "vintage") {
+        settings.sepia = 65;
+        settings.saturation = 75;
+        settings.brightness = 110;
+    }
+
+    if (type === "vibrant") {
+        settings.saturation = 180;
+        settings.contrast = 110;
+    }
+
+    sliderNames.forEach(name => {
+        document.getElementById(name).value = settings[name];
+        document.getElementById(name + "Value").textContent =
+            name === "hue" ? settings[name] + "°" :
+            name === "blur" ? settings[name] + "px" :
+            settings[name] + "%";
+    });
+
+    updatePreview();
+}
+
+function enableCrop() {
+    if (!originalImage) {
+        alert("Upload a photo first.");
+        return;
+    }
+
+    if (cropper) return;
+
+    image.style.filter = "none";
+    image.style.transform = "none";
+
+    cropper = new Cropper(image, {
+        viewMode: 1,
+        autoCropArea: 0.8,
+        responsive: true,
+        background: false
+    });
+}
+
+function setAspect(ratio) {
+    if (!cropper) {
+        enableCrop();
+    }
+
+    if (cropper) {
+        cropper.setAspectRatio(ratio);
+    }
+}
+
+function cancelCrop() {
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+        updatePreview();
+    }
+}
+
+function applyCrop() {
+    if (!cropper) {
+        alert("Select Crop first.");
+        return;
+    }
+
+    const cropped = cropper.getCroppedCanvas({
+        maxWidth: 3000,
+        maxHeight: 3000,
+        imageSmoothingEnabled: true,
+        imageSmoothingQuality: "high"
+    });
+
+    if (!cropped) return;
+
+    originalImage = new Image();
+
+    originalImage.onload = function() {
+        image.src = cropped.toDataURL("image/png");
+        cropper.destroy();
+        cropper = null;
+
+        rotation = 0;
+        flipX = 1;
+        flipY = 1;
+
+        updatePreview();
+        document.getElementById("dimensions").textContent =
+            cropped.width + " × " + cropped.height;
+    };
+
+    originalImage.src = cropped.toDataURL("image/png");
+}
+
+function resetEditor() {
+    if (!originalImage) return;
+
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+
+    rotation = 0;
+    flipX = 1;
+    flipY = 1;
+
+    resetSettings();
+    image.src = originalImage.src;
+    updatePreview();
+}
+
+function downloadImage() {
+    if (!originalImage) {
+        alert("Please upload a photo first.");
+        return;
+    }
+
+    if (cropper) {
+        alert("Please apply or cancel the crop before downloading.");
+        return;
+    }
+
+    const radians = rotation * Math.PI / 180;
+    const width = originalImage.width;
+    const height = originalImage.height;
+
+    const rotatedWidth =
+        Math.abs(width * Math.cos(radians)) +
+        Math.abs(height * Math.sin(radians));
+
+    const rotatedHeight =
+        Math.abs(width * Math.sin(radians)) +
+        Math.abs(height * Math.cos(radians));
+
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.ceil(rotatedWidth);
+    canvas.height = Math.ceil(rotatedHeight);
+
+    const ctx = canvas.getContext("2d");
+
+    ctx.filter =
+        `brightness(${settings.brightness}%) ` +
+        `contrast(${settings.contrast}%) ` +
+        `saturate(${settings.saturation}%) ` +
+        `blur(${settings.blur}px) ` +
+        `grayscale(${settings.grayscale}%) ` +
+        `sepia(${settings.sepia}%) ` +
+        `hue-rotate(${settings.hue}deg)`;
+
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.rotate(radians);
+    ctx.scale(flipX, flipY);
+
+    ctx.drawImage(
+        originalImage,
+        -width / 2,
+        -height / 2,
+        width,
+        height
+    );
+
+    canvas.toBlob(function(blob) {
+        if (!blob) {
+            alert("Could not export this image.");
+            return;
+        }
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = "SnapGather-Edited-Photo.png";
+        link.click();
+
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }, "image/png");
+}
+
+document.getElementById("downloadButton")
+    .addEventListener("click", downloadImage);
+
+document.getElementById("downloadTop")
+    .addEventListener("click", downloadImage);
+</script>
+
+</body>
+</html>
